@@ -20,7 +20,19 @@ def get_scope_details(scope,ip,port='8091', username='admin', password='Cohe$1ty
     bucket_name = scope._bucket.name
     url = f'http://{ip}:{port}/pools/default/buckets/{bucket_name}/scopes/'
     res = requests.get(url, auth=HTTPBasicAuth(username, password), ).json()
-    return res
+    for s in res.get('scopes'):
+        if scope.name == s.get('name'):
+             return s
+    return None
+
+def get_collection_ids_from_scope(scope, ip, port='8091', username='admin', password='Cohe$1ty'):
+    result = get_scope_details(scope, ip, port, username, password)
+    collection_ids = []
+    for c in result.get('collections'):
+        c.get('uid')
+        coll_id = f"0x{c.get('uid')}"
+        collection_ids.append(coll_id)
+    return collection_ids
 
 if __name__ == '__main__':
     ip = '10.14.69.126'

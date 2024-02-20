@@ -19,14 +19,5 @@ def get_connection(ip, username='admin', password='Cohe$1ty'):
 
     return conn
 
-
-
-
-
-
-
-def get_collection(scope_obj, collection):
-    return scope_obj.collection(collection)
-
 if __name__ == '__main__':
     conn = get_connection('10.14.69.126')
