@@ -15,9 +15,15 @@ def create_collection(scope, collection_name):
 def get_collection(scope, collection_name):
     return scope.collection(collection_name)
 
+def create_multi_collection(scope, prefix, count, start=0):
+    for i in range(count):
+        name = f'{prefix}{i}'
+        create_collection(scope, name)
+
 if __name__ == '__main__':
     conn = get_connection('10.14.69.126')
     bucket = get_bucket(conn, 'st-vmrobo')
     scope = get_scope(bucket, 'st-scope')
-    coll = get_collection(scope, 'st-collection')
+    # coll = get_collection(scope, 'st-collection')
+    create_multi_collection(scope, 'stcollection', 1000)
     print('Success!')

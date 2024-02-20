@@ -1,8 +1,9 @@
 import subprocess
 import argparse
 import concurrent.futures
+from itertools import cycle
 
-from connections import get_connection
+from connections import get_connection, get_cluster_nodes
 from buckets import get_bucket
 from scopes import get_scope, get_collection_ids_from_scope
 
@@ -35,9 +36,10 @@ def pump_data(pythonpath, cbworkloadgen_path, node, port, username, password, bu
 
 def pump_data_in_parallel(python_path, cbworkloadgen_path, node, port, username, password, bucket, threads, items, prefix, size, collection_ids):
     future_to_coll = {}
+    node_cycle = cycle(get_cluster_nodes(node))
     with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(collection_ids), 512)) as executor:
         for c in collection_ids:
-            arg = (python_path, cbworkloadgen_path, node, port, username, password, bucket, threads, items, prefix, size, c)
+            arg = (python_path, cbworkloadgen_path, next(node_cycle), port, username, password, bucket, threads, items, prefix, size, c)
             future_to_coll[executor.submit(pump_data, *arg)] = c
 
     result = []
