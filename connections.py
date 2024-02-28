@@ -29,6 +29,6 @@ def get_cluster_nodes(ip, port=8091, username='admin', password='Cohe$1ty'):
     return result
 
 if __name__ == '__main__':
-    # conn = get_connection('10.14.69.126')
-    result = get_cluster_nodes('10.14.69.126')
+    # conn = get_connection('10.3.59.180')
+    result = get_cluster_nodes('10.3.59.180')
     print(result)

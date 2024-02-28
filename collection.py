@@ -21,9 +21,13 @@ def create_multi_collection(scope, prefix, count, start=0):
         create_collection(scope, name)
 
 if __name__ == '__main__':
-    conn = get_connection('10.14.69.126')
+    conn = get_connection('10.3.59.180')
     bucket = get_bucket(conn, 'st-vmrobo')
-    scope = get_scope(bucket, 'st-scope')
-    # coll = get_collection(scope, 'st-collection')
-    create_multi_collection(scope, 'stcollection', 1000)
+    count = 999
+    prefix = 'st-scope'
+    for i in range(count):
+        name = f'{prefix}{i}'
+        scope = get_scope(bucket, name)
+        print(f'scope_name: {name}')
+        create_multi_collection(scope, 'stcollection', 1)
     print('Success!')

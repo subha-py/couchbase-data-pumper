@@ -5,7 +5,7 @@ from itertools import cycle
 
 from connections import get_connection, get_cluster_nodes
 from buckets import get_bucket
-from scopes import get_scope, get_collection_ids_from_scope
+from scopes import get_scope, get_collection_ids_from_scope, get_all_scopes
 
 
 
@@ -20,13 +20,13 @@ parser.add_argument('--username', default='admin', help='username (default: admi
 parser.add_argument('--password', default='Cohe$1ty', help='password (default: Cohe$1ty)', type=str)
 parser.add_argument('--bucket', default='st-vmrobo', help='bucket (default: st-vmrobo)', type=str)
 parser.add_argument('--scope', default='st-scope', help='scope (default: st-scope)', type=str)
-parser.add_argument('--threads', default='9', help='threads (default: 9)', type=str)
-parser.add_argument('--items', default='100', help='number of documents to be inserted per collection (default: 100)', type=str)
+parser.add_argument('--threads', default='1', help='threads (default: 9)', type=str)
+parser.add_argument('--items', default='1000', help='number of documents to be inserted per collection (default: 100)', type=str)
 parser.add_argument('--prefix', default='st', help='document id prefix (default: st)', type=str)
-parser.add_argument('--size', default='100000', help='size of each document in bytes (default: 100000)', type=str)
+parser.add_argument('--size', default='10000', help='size of each document in bytes (default: 100)', type=str)
 
 def pump_data(pythonpath, cbworkloadgen_path, node, port, username, password, bucket, threads, items, prefix, size, collection):
-    cmd = f'{pythonpath} {cbworkloadgen_path} -n {node}:{port} -u {username} -p {password} -b {bucket} --no-ssl-verify -t {threads} -r 1.0 -i {items} --prefix {prefix} -s {size} --low-compression -c {collection}'
+    cmd = f'{pythonpath} {cbworkloadgen_path} -n {node}:{port} -u {username} -p {password} -b {bucket} --no-ssl-verify -t {threads} -r 1.0 -i {items} --prefix {prefix} -s {size} -c {collection} --json'
     cmd_args = cmd.split()
     exit_code = subprocess.run(cmd_args, stdout=subprocess.DEVNULL)
     if exit_code.returncode == 0:
@@ -57,8 +57,13 @@ if __name__ == '__main__':
     result = parser.parse_args()
     conn = get_connection(result.node)
     b = get_bucket(conn, result.bucket)
-    scope_obj = get_scope(b, result.scope)
-    collection_ids = get_collection_ids_from_scope(scope_obj, result.node)
+    scope_objs = get_all_scopes(b)
+    collection_ids = []
+    for scope in scope_objs:
+        scope_obj = get_scope(b, scope.name)
+        print(f'getting collection ids for  - {scope.name}')
+        collection_ids += get_collection_ids_from_scope(scope_obj, result.node)
+    print(collection_ids)
     pump_data_in_parallel(result.python_path, result.cbworkloadgen_path, result.node, result.port, result.username,
                           result.password, result.bucket, result.threads, result.items, result.prefix, result.size,
                           collection_ids)

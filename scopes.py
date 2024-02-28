@@ -34,11 +34,17 @@ def get_collection_ids_from_scope(scope, ip, port='8091', username='admin', pass
         collection_ids.append(coll_id)
     return collection_ids
 
+def create_multi_scope(bucket ,prefix, count, start=0):
+    for i in range(start, count):
+        name = f'{prefix}{i}'
+        create_scope(bucket, name)
+
+def get_all_scopes(bucket):
+    return bucket.collections().get_all_scopes()
+
 if __name__ == '__main__':
-    ip = '10.14.69.126'
+    ip = '10.3.59.180'
     conn = get_connection(ip)
     bucket = get_bucket(conn, 'st-vmrobo')
-    # create_scope(bucket, 'st-scope')
-    scope = get_scope(bucket, 'st-scope')
-    result = get_scope_details(scope, ip)
+    create_multi_scope(bucket, 'st-scope', 999, 855)
     print('Success!')
