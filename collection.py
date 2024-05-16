@@ -3,7 +3,7 @@ from couchbase.exceptions import CollectionAlreadyExistsException
 
 from connections import get_connection
 from buckets import get_bucket
-from scopes import get_scope
+from scopes import get_scope, get_all_scopes
 def create_collection(scope, collection_name):
     coll_manager = scope._bucket.collections()
     try:
@@ -21,13 +21,11 @@ def create_multi_collection(scope, prefix, count, start=0):
         create_collection(scope, name)
 
 if __name__ == '__main__':
-    conn = get_connection('10.3.59.180')
-    bucket = get_bucket(conn, 'st-vmrobo')
-    count = 999
-    prefix = 'st-scope'
-    for i in range(count):
-        name = f'{prefix}{i}'
-        scope = get_scope(bucket, name)
-        print(f'scope_name: {name}')
-        create_multi_collection(scope, 'stcollection', 1)
+    conn = get_connection('10.3.59.181')
+    bucket = get_bucket(conn, 'st-vmrobo0')
+    count = 1
+    scope_objs = get_all_scopes(bucket)
+    for scope in scope_objs:
+        scope_obj = get_scope(bucket, scope.name)
+        create_multi_collection(scope_obj, 'stcollection', 100)
     print('Success!')

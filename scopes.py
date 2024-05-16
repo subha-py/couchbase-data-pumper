@@ -40,11 +40,16 @@ def create_multi_scope(bucket ,prefix, count, start=0):
         create_scope(bucket, name)
 
 def get_all_scopes(bucket):
-    return bucket.collections().get_all_scopes()
+    scope_objs = bucket.collections().get_all_scopes()
+    result = []
+    for scope in scope_objs:
+        if scope.name not in ['_default', '_system']:
+            result.append(scope)
+    return result
 
 if __name__ == '__main__':
-    ip = '10.3.59.180'
-    conn = get_connection(ip)
-    bucket = get_bucket(conn, 'st-vmrobo')
-    create_multi_scope(bucket, 'st-scope', 999, 855)
-    print('Success!')
+    conn = get_connection('10.3.59.181')
+    bucket = get_bucket(conn, 'st-vmrobo0')
+    count = 1
+    scope_objs = get_all_scopes(bucket)
+    print(scope_objs)
